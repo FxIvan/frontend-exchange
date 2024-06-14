@@ -17,7 +17,7 @@ export default async function Page() {
   const { assets, deposit, withdraw, orders, history } = await getData();
 
   return (
-    <div>
+    <div className="container mx-auto">
       <DataTableBinance
         assets={assets}
         deposit={deposit}

@@ -1,5 +1,8 @@
 import Image from "next/image";
 
+import { LicenseInfo } from "@mui/x-license-pro";
+
+LicenseInfo.setLicenseKey(import.meta.env.VITE_MUI_PRO_LICENSE_KEY);
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
