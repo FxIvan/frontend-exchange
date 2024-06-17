@@ -57,9 +57,18 @@ export function DataTableBinance({
     };
   });
 
+  const newAssetsCurrent = assets[0].map((row) => {
+    return {
+      ...row,
+      id: randomId(),
+    };
+  });
+
   const [rows, setRows] = React.useState(newHistory);
+  const [rowsAssets, setRowsAssets] = React.useState(newAssetsCurrent);
 
   const [rowModesModel, setRowModesModel] = React.useState({});
+  const [rowModesModelAssets, setRowModesModelAssets] = React.useState({});
 
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -91,28 +100,42 @@ export function DataTableBinance({
     }
   };
 
+  /////////////////////////////////////////////
   const processRowUpdate = (newRow) => {
     const updatedRow = { ...newRow, isNew: false };
     setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
     return updatedRow;
   };
 
+  const processRowUpdateAssets = (newRow) => {
+    const updatedRow = { ...newRow, isNew: false };
+    setRowsAssets(
+      rowsAssets.map((row) => (row.id === newRow.id ? updatedRow : row))
+    );
+    return updatedRow;
+  };
+  /////////////////////////////////////////////
+
   const handleRowModesModelChange = (newRowModesModel) => {
     setRowModesModel(newRowModesModel);
   };
 
-  const columns = [
+  const handleRowModesModelChangeAssets = (newRowModesModel) => {
+    setRowModesModelAssets(newRowModesModel);
+  };
+
+  const columnsHistory = [
     {
       field: "type",
       headerName: "Type",
       flex: 1,
       editable: true,
     },
-    {
+    /*{
       field: "id",
       headerName: "Column Mui ID",
       type: "string",
-    },
+    },*/
     {
       field: "idHistory",
       headerName: "ID Transaction History",
@@ -241,36 +264,179 @@ export function DataTableBinance({
     },
   ];
 
+  const columnsBalances = [
+    {
+      field: "asset",
+      headerName: "Asset",
+      flex: 1,
+      editable: true,
+    },
+    /*{
+      field: "id",
+      headerName: "Column Mui ID",
+      type: "string",
+    },*/
+    {
+      field: "free",
+      headerName: "Free",
+      type: "string",
+      flex: 1,
+      editable: true,
+    },
+    {
+      field: "locked",
+      headerName: "Locked",
+      type: "string",
+      flex: 1,
+      editable: true,
+    },
+    {
+      field: "freeze",
+      headerName: "Freeze",
+      type: "string",
+      flex: 1,
+      editable: true,
+    },
+    {
+      field: "withdrawing",
+      headerName: "Withdrawing",
+      type: "string",
+      flex: 1,
+      editable: true,
+    },
+    {
+      field: "ipoable",
+      headerName: "Ipoable",
+      type: "string",
+      flex: 1,
+      editable: true,
+    },
+    {
+      field: "btcValuation",
+      headerName: "BTC Valuation",
+      type: "string",
+      flex: 1,
+      editable: true,
+    },
+    {
+      field: "actions",
+      type: "actions",
+      flex: 1,
+      headerName: "Actions",
+      //width: 100,
+      cellClassName: "actions",
+      getActions: ({ id }) => {
+        const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
+
+        if (isInEditMode) {
+          return [
+            <GridActionsCellItem
+              icon={<SaveIcon />}
+              label="Save"
+              sx={{
+                color: "primary.main",
+              }}
+              onClick={handleSaveClick(id)}
+            />,
+            <GridActionsCellItem
+              icon={<CancelIcon />}
+              label="Cancel"
+              className="textPrimary"
+              onClick={handleCancelClick(id)}
+              color="inherit"
+            />,
+          ];
+        }
+
+        return [
+          <GridActionsCellItem
+            icon={<EditIcon />}
+            label="Edit"
+            className="textPrimary"
+            onClick={handleEditClick(id)}
+            color="inherit"
+          />,
+          <GridActionsCellItem
+            icon={<DeleteIcon />}
+            label="Delete"
+            onClick={handleDeleteClick(id)}
+            color="inherit"
+          />,
+        ];
+      },
+    },
+  ];
+
   return (
     <div className="h-screen content-center">
-      <Box
-        sx={{
-          height: 500,
-          width: "100%",
-          "& .actions": {
-            color: "text.secondary",
-          },
-          "& .textPrimary": {
-            color: "text.primary",
-          },
-        }}
-      >
-        <DataGridPro
-          rows={rows}
-          columns={columns}
-          editMode="row"
-          rowModesModel={rowModesModel}
-          onRowModesModelChange={handleRowModesModelChange}
-          onRowEditStop={handleRowEditStop}
-          processRowUpdate={processRowUpdate}
-          slots={{
-            toolbar: EditToolbar,
+      <div className="my-12">
+        <h2 className="text-black text-xl">
+          Depositos, Retiros y Ordenes de Compra/Venta
+        </h2>
+      </div>
+      <div className="">
+        <Box
+          sx={{
+            height: 500,
+            width: "100%",
+            "& .actions": {
+              color: "text.secondary",
+            },
+            "& .textPrimary": {
+              color: "text.primary",
+            },
           }}
-          slotProps={{
-            toolbar: { setRows, setRowModesModel },
+        >
+          <DataGridPro
+            rows={rows}
+            columns={columnsHistory}
+            editMode="row"
+            rowModesModel={rowModesModel}
+            onRowModesModelChange={handleRowModesModelChange}
+            onRowEditStop={handleRowEditStop}
+            processRowUpdate={processRowUpdate}
+            slots={{
+              toolbar: EditToolbar,
+            }}
+            slotProps={{
+              toolbar: { setRows, setRowModesModel },
+            }}
+          />
+        </Box>
+      </div>
+      <div className="my-12">
+        <h2 className="text-black text-xl">Activos Actuales</h2>
+      </div>
+      <div className="mt-12">
+        <Box
+          sx={{
+            height: 500,
+            width: "100%",
+            "& .actions": {
+              color: "text.secondary",
+            },
+            "& .textPrimary": {
+              color: "text.primary",
+            },
           }}
-        />
-      </Box>
+        >
+          <DataGridPro
+            rows={rowsAssets}
+            columns={columnsBalances}
+            editMode="row"
+            rowModesModel={rowModesModel}
+            onRowModesModelChange={handleRowModesModelChangeAssets}
+            onRowEditStop={handleRowEditStop}
+            processRowUpdate={processRowUpdateAssets}
+            slots={{
+              toolbar: EditToolbar,
+            }}
+            slotProps={{
+              toolbar: { setRows, setRowModesModel },
+            }}
+          />
+        </Box>
+      </div>
     </div>
   );
 }
