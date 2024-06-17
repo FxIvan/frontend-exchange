@@ -284,6 +284,19 @@ export function DataTableBinance({
       editable: true,
     },
     {
+      field: "price",
+      headerName: "Price USDT",
+      type: "string",
+      flex: 1,
+    },
+    {
+      field: "totalUSDT",
+      headerName: "Total USDT",
+      type: "string",
+      flex: 1,
+      editable: true,
+    },
+    {
       field: "locked",
       headerName: "Locked",
       type: "string",
