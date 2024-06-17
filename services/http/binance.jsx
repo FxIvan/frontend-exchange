@@ -2,9 +2,7 @@ const getPortfolioBinanceHTTP = async () => {
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/exchange/binance`,
-      {
-        method: "GET",
-      }
+      { cache: "no-store", method: "GET" }
     );
 
     const { data } = await response.json();
